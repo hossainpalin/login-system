@@ -1,0 +1,40 @@
+{
+  // Code Formating Config Here
+  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // VSCode Default Validation Config Here
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
+
+  // Auto Close Tag Config Here
+  "javascript.autoClosingTags": false,
+
+  // Code Action On Save Config Here
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.tslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // VSCode Emmet Including Language Config Here
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+
+  // TailwindCSS Config Here
+  "css.validate": false,
+  "tailwindCSS.emmetCompletions": true
+}
