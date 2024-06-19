@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { LuAlertTriangle } from "react-icons/lu";
@@ -13,20 +14,45 @@ export default function RegisterForm() {
   const [typePass, setTypePass] = useState(true);
   const [eyeToggleCPass, setEyeToggleCPass] = useState(false);
   const [typeCPass, setTypeCPass] = useState(true);
+  const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState,
-    setError,
-    watch,
-    clearErrors,
-  } = useForm();
-
-  const submitRegisterForm = async (data) => {};
-
+  const { register, handleSubmit, formState, setError, watch, clearErrors } =
+    useForm();
   const { isSubmitting, errors } = formState;
+
+  const submitRegisterForm = async (data) => {
+    const userData = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      agreement: data.agreement,
+    };
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (response.status === 400) {
+        setError("auth", {
+          type: "auth",
+          message: "User already exists",
+        });
+      } else if (response.status === 201) {
+        router.push("/login");
+      }
+    } catch (error) {
+      setError("auth", {
+        type: "random",
+        message: error.message,
+      });
+    }
+  };
+
   return (
     <form
       onSubmit={(e) => {
@@ -35,21 +61,21 @@ export default function RegisterForm() {
       }}
       autocomplete="off">
       {errors.auth?.type === "auth" && (
-        <span className="text-md bg-primary/15 mb-5 flex items-center gap-2 py-2 pl-2 text-red-600">
+        <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
           <span>{errors.auth.message}</span>
         </span>
       )}
 
       {errors.auth?.type === "random" && (
-        <span className="text-md bg-primary/15 mb-5 flex items-center gap-2 py-2 pl-2 text-red-600">
+        <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
           <span>{errors.random.message}</span>
         </span>
       )}
 
       <div class="space-y-2">
-        <Field error={errors.name} label="Full name">
+        <Field error={errors.full_name} label="Full name">
           <input
             {...register("name", {
               required: "Full name is required field",
@@ -82,10 +108,6 @@ export default function RegisterForm() {
             <input
               {...register("password", {
                 required: "Password is required field",
-                minLength: {
-                  value: 8,
-                  message: "Password must be 8 characters long",
-                },
                 pattern: {
                   value:
                     /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[a-zA-Z!#$%&? "])[a-zA-Z0-9!#$%&?]{8,20}$/,

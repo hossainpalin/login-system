@@ -1,5 +1,8 @@
+import { auth } from "@/auth";
 import Avatar from "@/components/auth/Avatar";
-import BackToHome from "@/components/auth/BackToHome";
+import Logout from "@/components/auth/Logout";
+import BackToHome from "@/components/BackToHome";
+import { getUserByEmail } from "@/database/queries/user";
 
 export function metadata() {
   return {
@@ -8,7 +11,9 @@ export function metadata() {
   };
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await auth();
+  const user = await getUserByEmail(session?.user?.email);
   return (
     <div className="flex w-full max-w-lg flex-col items-center overflow-hidden rounded bg-white px-6 py-7 shadow">
       <div className="mb-8 w-full">
@@ -17,11 +22,28 @@ export default function DashboardPage() {
           <h2 className="mb-1 text-2xl font-medium text-gray-700">Dashboard</h2>
         </div>
         <p className="text-md mb-6 text-gray-600">
-          Welcome back, Hossain Muhammad Palin
+          Welcome back, {session?.user?.name}!
         </p>
       </div>
 
-      <Avatar />
+      <Avatar
+        userName={user?.name}
+        userAvatar={user?.image}
+        userId={user?._id}
+      />
+
+      <div className="mb-8 text-center">
+        <h3 className="text-2xl font-semibold text-gray-700 lg:text-[28px]">
+          {session?.user?.name ? session?.user?.name : "No name found"}
+        </h3>
+        <p className="leading-[231%] text-gray-600 lg:text-lg">
+          {session?.user?.email
+            ? session?.user?.email
+            : "No email address found"}
+        </p>
+      </div>
+
+      <Logout isNav={false} />
     </div>
   );
 }

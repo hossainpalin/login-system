@@ -11,6 +11,6 @@
   }
 
   .submit-button {
-    @apply block w-full rounded-md border bg-slate-700 py-2 text-center font-medium text-white transition hover:bg-slate-800;
+    @apply block w-full cursor-pointer rounded-md border bg-slate-700 py-2 text-center font-medium text-white transition hover:bg-slate-800;
   }
 }

@@ -1,7 +1,9 @@
 "use client";
 
+import { loginAction } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { LuAlertTriangle } from "react-icons/lu";
@@ -11,11 +13,31 @@ import Field from "./Field";
 export default function LoginForm() {
   const [eyeToggle, setEyeToggle] = useState(false);
   const [type, setType] = useState(true);
+  const router = useRouter();
 
-  const { register, handleSubmit, formState, clearErrors } = useForm();
+  const { register, handleSubmit, formState, clearErrors, setError } =
+    useForm();
   const { isSubmitting, errors } = formState;
 
-  const submitLoginForm = async (formData) => {};
+  const submitLoginForm = async (data) => {
+    try {
+      const response = await loginAction(data);
+
+      if (response.error) {
+        setError("auth", {
+          type: "auth",
+          message: response.error,
+        });
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      setError("random", {
+        type: "random",
+        message: error.message,
+      });
+    }
+  };
 
   return (
     <form
@@ -25,14 +47,14 @@ export default function LoginForm() {
       }}
       autocomplete="off">
       {errors.auth?.type === "auth" && (
-        <span className="text-md bg-primary/15 mb-5 flex items-center gap-2 py-2 pl-2 text-red-600">
+        <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
           <span>{errors.auth?.message}</span>
         </span>
       )}
 
       {errors.auth?.type === "random" && (
-        <span className="text-md bg-primary/15 mb-5 flex items-center gap-2 py-2 pl-2 text-red-600">
+        <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
           <span>{errors.random?.message}</span>
         </span>

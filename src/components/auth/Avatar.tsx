@@ -1,10 +1,13 @@
 "use client";
 
+import { updateAvatarAction } from "@/actions/avatar";
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
-export default function Avatar(user) {
+export default function Avatar({ userName, userAvatar, userId }) {
+  const [loading, setLoading] = useState(false);
   const avatarUploadRef = useRef(null);
+  console.log(userAvatar);
 
   const handleAvatarUpload = (e) => {
     e.preventDefault();
@@ -18,6 +21,7 @@ export default function Avatar(user) {
     formData.append("image", avatar);
 
     try {
+      setLoading(true);
       const response = await fetch(
         "https://api.imgbb.com/1/upload?key=6d98024b636642e855954bf456da327d",
         {
@@ -27,29 +31,39 @@ export default function Avatar(user) {
       );
 
       if (response.status === 200) {
-        // TODO: Update user avatar
         const data = await response.json();
-        console.log(data);
+        await updateAvatarAction(userId, data.data.url);
+        setLoading(false);
       }
     } catch (error) {
-      console.error(error);
+      throw new Error(error.message);
     }
   };
   return (
     <>
       <div className="flex flex-col items-center">
         <div className="bg-primary relative mb-8 flex h-[120px] w-[120px] items-center justify-center rounded-full text-6xl font-semibold text-white">
-          <div className="flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full border-[3px] border-gray-700 bg-red-600">
-            {user?.image ? (
-              <Image
-                className="h-full w-full object-cover"
-                src={user?.image}
-                alt={user?.name}
-                width={150}
-                height={150}
-              />
+          <div className="flex h-[120px] w-[120px] items-center justify-center overflow-hidden rounded-full border-[3px] border-gray-700 bg-blue-600">
+            {userAvatar ? (
+              loading ? (
+                <Image
+                  src="/loading.gif"
+                  alt="loading"
+                  width={50}
+                  height={50}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <Image
+                  className="h-full w-full object-cover"
+                  src={userAvatar}
+                  alt={userName}
+                  width={150}
+                  height={150}
+                />
+              )
             ) : (
-              <p>{"Hossain".charAt(0)?.toUpperCase()}</p>
+              <p>{userName.charAt(0)?.toUpperCase()}</p>
             )}
           </div>
 
@@ -80,18 +94,7 @@ export default function Avatar(user) {
             />
           </form>
         </div>
-
-        <div className="mb-8 text-center">
-          <h3 className="text-2xl font-semibold text-gray-700 lg:text-[28px]">
-            {true ? "Hossain Muhammad Palin" : "No name found"}
-          </h3>
-          <p className="leading-[231%] text-gray-600 lg:text-lg">
-            {true ? "hossain.palin@gmail.com" : "No email address found"}
-          </p>
-        </div>
       </div>
-
-      <button className="submit-button">Log out</button>
     </>
   );
 }

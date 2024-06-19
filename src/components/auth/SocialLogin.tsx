@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 
 export default function SocialLogin() {

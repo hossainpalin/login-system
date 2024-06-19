@@ -1,4 +1,4 @@
-import BackToHome from "@/components/auth/BackToHome";
+import BackToHome from "@/components/BackToHome";
 import LoginForm from "@/components/auth/LoginForm";
 import SocialLogin from "@/components/auth/SocialLogin";
 import Link from "next/link";
