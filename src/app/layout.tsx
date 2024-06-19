@@ -18,7 +18,7 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <body
-        className={`${inter.className} bg-gradient-to-r from-slate-900 to-slate-700`}>
+        className={`${inter.className} container flex h-screen w-full items-center justify-center bg-gradient-to-r from-slate-900 to-slate-700`}>
         {children}
       </body>
     </html>
