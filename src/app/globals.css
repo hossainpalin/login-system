@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .input-box {
+    @apply block w-full rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-600 placeholder-gray-400 outline-none focus:border-slate-700;
+  }
+
+  .submit-button {
+    @apply block w-full rounded-md border bg-slate-700 py-2 text-center font-medium text-white transition hover:bg-slate-800;
+  }
+}
