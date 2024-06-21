@@ -7,7 +7,6 @@ import { useRef, useState } from "react";
 export default function Avatar({ userName, userAvatar, userId }) {
   const [loading, setLoading] = useState(false);
   const avatarUploadRef = useRef(null);
-  console.log(userAvatar);
 
   const handleAvatarUpload = (e) => {
     e.preventDefault();

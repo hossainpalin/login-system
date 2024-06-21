@@ -46,17 +46,17 @@ export default function LoginForm() {
         handleSubmit(submitLoginForm)(e);
       }}
       autocomplete="off">
-      {errors.auth?.type === "auth" && (
+      {errors?.auth?.type === "auth" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors.auth?.message}</span>
+          <span>{errors?.auth?.message}</span>
         </span>
       )}
 
-      {errors.auth?.type === "random" && (
+      {errors?.random?.type === "random" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors.random?.message}</span>
+          <span>{errors?.random?.message}</span>
         </span>
       )}
       <div className="space-y-2">

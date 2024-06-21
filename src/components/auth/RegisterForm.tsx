@@ -2,9 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import Field from "./Field";
@@ -14,7 +14,6 @@ export default function RegisterForm() {
   const [typePass, setTypePass] = useState(true);
   const [eyeToggleCPass, setEyeToggleCPass] = useState(false);
   const [typeCPass, setTypeCPass] = useState(true);
-  const router = useRouter();
 
   const { register, handleSubmit, formState, setError, watch, clearErrors } =
     useForm();
@@ -42,11 +41,16 @@ export default function RegisterForm() {
           type: "auth",
           message: "User already exists",
         });
-      } else if (response.status === 201) {
-        router.push("/login");
+      }
+
+      if (response.status === 201) {
+        setError("verify", {
+          type: "verify",
+          message: "Confirmation email sent!",
+        });
       }
     } catch (error) {
-      setError("auth", {
+      setError("random", {
         type: "random",
         message: error.message,
       });
@@ -60,17 +64,24 @@ export default function RegisterForm() {
         handleSubmit(submitRegisterForm)(e);
       }}
       autocomplete="off">
-      {errors.auth?.type === "auth" && (
+      {errors?.auth?.type === "auth" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors.auth.message}</span>
+          <span>{errors?.auth?.message}</span>
         </span>
       )}
 
-      {errors.auth?.type === "random" && (
+      {errors?.random?.type === "random" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors.random.message}</span>
+          <span>{errors?.random?.message}</span>
+        </span>
+      )}
+
+      {errors?.verify?.type === "verify" && (
+        <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-green-100 py-2 pl-2 text-green-600">
+          <IoIosCheckmarkCircleOutline />
+          <span>{errors?.verify?.message}</span>
         </span>
       )}
 
@@ -170,11 +181,11 @@ export default function RegisterForm() {
               id="agreement"
               className="text-primary cursor-pointer rounded-sm focus:ring-0"
             />
-            <label
-              htmlFor="agreement"
-              className="ml-2 cursor-pointer text-gray-600">
+            <label htmlFor="agreement" className="ml-2 text-gray-600">
               I have read and agree to the{" "}
-              <Link href="#" className="text-primary">
+              <Link
+                href="/terms-conditions"
+                className="text-gray-700 hover:underline">
                 terms & conditions
               </Link>
             </label>

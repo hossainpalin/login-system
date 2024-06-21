@@ -21,6 +21,12 @@ const userSchema = new Schema(
     image: {
       type: String,
       required: false,
+      default: null,
+    },
+    emailVerified: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   { timestamps: true },

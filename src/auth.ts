@@ -6,6 +6,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import { authConfig } from "./auth.config";
 import clientPromise from "./database/mongoClientPromise";
+import { getUserById } from "./database/queries/user";
 import { UsersModel } from "./models/user-model";
 
 export const {
@@ -19,12 +20,27 @@ export const {
     databaseName: process.env.ENVIRONMENT,
   }),
   callbacks: {
-    async jwt({ token, user }) {
-      return { ...token, ...user };
+    async signIn({ user, account }) {
+      // Allow OAuth without email verification
+      if (account?.provider !== "credentials") return true;
+
+      // Check if email is verified
+      const existingUser = await getUserById(user?.id);
+      if (!existingUser?.emailVerified) return false;
+
+      // TODO - Add 2FA here
+
+      return true;
     },
     async session({ session, token }) {
-      session.user = token;
+      session.user = token as any;
       return session;
+    },
+    async jwt({ token }) {
+      if (token) {
+        token.id = token.sub;
+      }
+      return token;
     },
   },
   providers: [
@@ -34,7 +50,6 @@ export const {
 
         try {
           const user = await UsersModel.findOne({ email: credentials?.email });
-
           if (user) {
             const isPasswordMatch = await bcrypt.compare(
               credentials?.password,

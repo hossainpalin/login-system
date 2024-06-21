@@ -1,3 +1,5 @@
+import { generateVerificationToken } from "@/database/queries/verification-token";
+import { sendVerificationEmail } from "@/lib/email";
 import { UsersModel } from "@/models/user-model";
 import connectMongoDB from "@/services/mongo";
 import bcrypt from "bcrypt";
@@ -30,7 +32,15 @@ export async function POST(request: NextRequest) {
   try {
     // Save the user to the database
     await UsersModel.create(newUser);
-    return new NextResponse("User created successfully", { status: 201 });
+
+    // Generate a verification token and send an email
+    const verificationToken = await generateVerificationToken(email);
+    await sendVerificationEmail(
+      verificationToken?.email,
+      verificationToken?.token,
+    );
+
+    return new NextResponse("Confirmation email sent!", { status: 201 });
   } catch (error) {
     console.log(error.message);
     return new NextResponse(error.message, { status: 500 });
