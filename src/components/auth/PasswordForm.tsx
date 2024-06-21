@@ -2,40 +2,53 @@
 
 import { resetPasswordAction } from "@/actions/auth";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
+
+type ResetPasswordFormData = {
+  password: string;
+};
 
 export default function PasswordForm({ token }: { token: string }) {
   const [eyeToggle, setEyeToggle] = useState(false);
   const [type, setType] = useState(true);
 
   const { register, handleSubmit, formState, clearErrors, setError } =
-    useForm();
+    useForm<ResetPasswordFormData>();
   const { errors, isSubmitting } = formState;
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<ResetPasswordFormData> = async (
+    formData,
+  ): Promise<void> => {
     try {
-      const response = await resetPasswordAction(token, data.password);
+      const response = await resetPasswordAction(token, formData.password);
 
       if (response?.error) {
-        setError("random", {
+        setError("root.random", {
           type: "random",
           message: response?.error,
         });
       } else if (response?.success) {
-        setError("reset", {
+        setError("root.reset", {
           type: "reset",
           message: response?.success,
         });
       }
     } catch (error) {
-      setError("random", {
-        type: "random",
-        message: "Something went wrong!",
-      });
+      if (error instanceof Error) {
+        setError("root.random", {
+          type: "random",
+          message: error.message,
+        });
+      } else {
+        setError("root.random", {
+          type: "random",
+          message: "An unknown error occurred",
+        });
+      }
     }
   };
 
@@ -49,17 +62,17 @@ export default function PasswordForm({ token }: { token: string }) {
       className="mb-8 flex w-full max-w-[350px] flex-col justify-center gap-8">
       <div>
         <div className="mb-2">
-          {errors?.random?.type === "random" && (
+          {errors?.root?.random?.type === "random" && (
             <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
               <LuAlertTriangle />
-              <span>{errors?.random?.message}</span>
+              <span>{errors?.root?.random?.message}</span>
             </span>
           )}
 
-          {errors?.reset?.type === "reset" && (
+          {errors?.root?.reset?.type === "reset" && (
             <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-green-100 py-2 pl-2 text-green-600">
               <IoIosCheckmarkCircleOutline />
-              <span>{errors?.reset?.message}</span>
+              <span>{errors?.root?.reset?.message}</span>
             </span>
           )}
         </div>
@@ -93,7 +106,7 @@ export default function PasswordForm({ token }: { token: string }) {
         {errors.password && (
           <div className="mt-1 flex items-center gap-1 text-red-500">
             <IoAlertCircleOutline />
-            {errors.password.message}
+            {errors?.password?.message}
           </div>
         )}
       </div>

@@ -87,7 +87,11 @@ export async function verifyEmailAction(token: string) {
     await VerificationTokensModel.deleteOne({ _id: existingToken._id });
     return { success: "Email verified successfully!" };
   } catch (error) {
-    return { error: error.message };
+    if (error instanceof Error) {
+      return { error: error.message };
+    } else {
+      return { error: "An unknown error occurred" };
+    }
   }
 }
 
@@ -105,7 +109,11 @@ export async function forgotPasswordAction(email: string) {
 
     return { success: "Reset email sent successfully!" };
   } catch (error) {
-    return { error: error.message };
+    if (error instanceof Error) {
+      return { error: error.message };
+    } else {
+      return { error: "An unknown error occurred" };
+    }
   }
 }
 
@@ -138,6 +146,10 @@ export async function resetPasswordAction(token: string, password: string) {
 
     return { success: "Password reset successfully!" };
   } catch (error) {
-    return { error: error.message };
+    if (error instanceof Error) {
+      return { error: error.message };
+    } else {
+      return { error: "An unknown error occurred" };
+    }
   }
 }

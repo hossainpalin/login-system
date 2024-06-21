@@ -2,7 +2,7 @@
 
 import { signOut } from "next-auth/react";
 
-export default function Logout({ isNav }) {
+export default function Logout({ isNav }: { isNav: boolean }) {
   return (
     <span
       onClick={() => signOut({ callbackUrl: "/" })}

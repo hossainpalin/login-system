@@ -1,6 +1,13 @@
 "use client";
 
-export default function Error({ error, reset }) {
+type errorProps = {
+  error: {
+    message: string;
+  };
+  reset: () => void;
+};
+
+export default function Error({ error, reset }: errorProps) {
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16">
       <div className="flex flex-col items-center text-center">

@@ -2,22 +2,36 @@
 
 import { updateAvatarAction } from "@/actions/avatar";
 import Image from "next/image";
+import * as React from "react";
 import { useRef, useState } from "react";
 
-export default function Avatar({ userName, userAvatar, userId }) {
-  const [loading, setLoading] = useState(false);
-  const avatarUploadRef = useRef(null);
+type AvatarProps = {
+  userName: string | null | undefined;
+  userAvatar: string | null | undefined;
+  userId: string | null | undefined;
+};
 
-  const handleAvatarUpload = (e) => {
+export default function Avatar({ userName, userAvatar, userId }: AvatarProps) {
+  const [loading, setLoading] = useState<boolean | undefined>(false);
+  const avatarUploadRef = useRef<HTMLInputElement | null>(null);
+
+  const handleAvatarUpload = (e: React.SyntheticEvent): void => {
     e.preventDefault();
-    avatarUploadRef.current.addEventListener("change", updateAvatar);
-    avatarUploadRef.current.click();
+
+    if (avatarUploadRef.current) {
+      avatarUploadRef.current.addEventListener("change", updateAvatar);
+      avatarUploadRef.current.click();
+    }
   };
 
-  const updateAvatar = async (e) => {
-    const avatar = e.target.files[0];
+  const updateAvatar = async (e: Event): Promise<void> => {
+    const target = e.target as HTMLInputElement;
     const formData = new FormData();
-    formData.append("image", avatar);
+
+    if (target && target.files) {
+      const avatar = target.files[0];
+      formData.append("image", avatar);
+    }
 
     try {
       setLoading(true);
@@ -34,11 +48,18 @@ export default function Avatar({ userName, userAvatar, userId }) {
 
       if (response.status === 200) {
         const data = await response.json();
-        await updateAvatarAction(userId, data.data.url);
+
+        if (userId !== null && userId !== undefined) {
+          await updateAvatarAction(userId, data.data.url);
+        }
         setLoading(false);
       }
     } catch (error) {
-      console.error(error.message);
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      } else {
+        throw new Error("An unknown error occurred");
+      }
     }
   };
   return (
@@ -60,14 +81,14 @@ export default function Avatar({ userName, userAvatar, userId }) {
                 <Image
                   className="h-full w-full object-cover"
                   src={userAvatar}
-                  alt={userName}
+                  alt={userName || "User Avatar"}
                   width={150}
                   height={150}
                   priority={true}
                 />
               )
             ) : (
-              <p>{userName.charAt(0)?.toUpperCase()}</p>
+              <p>{userName?.charAt(0)?.toUpperCase()}</p>
             )}
           </div>
 

@@ -2,13 +2,15 @@ import BackToHome from "@/components/BackToHome";
 import VerificationForm from "@/components/auth/VerificationForm";
 import Link from "next/link";
 
-export default function EmailVerificationPage({
-  searchParams,
-}: {
-  searchParams: URLSearchParams;
-}) {
-  const token = searchParams.token;
+type myParamsProps = {
+  searchParams: {
+    token: string;
+  };
+};
 
+export default function EmailVerificationPage({
+  searchParams: { token },
+}: myParamsProps) {
   return (
     <div className="flex w-full max-w-lg flex-col items-center overflow-hidden rounded bg-white px-6 py-7 shadow">
       <div className="mb-8 w-full">

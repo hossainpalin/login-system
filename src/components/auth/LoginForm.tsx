@@ -5,10 +5,15 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import Field from "./Field";
+
+type LoginFormProps = {
+  email: string;
+  password: string;
+};
 
 export default function LoginForm() {
   const [eyeToggle, setEyeToggle] = useState(false);
@@ -16,15 +21,17 @@ export default function LoginForm() {
   const router = useRouter();
 
   const { register, handleSubmit, formState, clearErrors, setError } =
-    useForm();
+    useForm<LoginFormProps>();
   const { isSubmitting, errors } = formState;
 
-  const submitLoginForm = async (data) => {
+  const submitLoginForm: SubmitHandler<LoginFormProps> = async (
+    formData,
+  ): Promise<void> => {
     try {
-      const response = await loginAction(data);
+      const response = await loginAction(formData);
 
       if (response.error) {
-        setError("auth", {
+        setError("root.auth", {
           type: "auth",
           message: response.error,
         });
@@ -32,10 +39,17 @@ export default function LoginForm() {
         router.push("/dashboard");
       }
     } catch (error) {
-      setError("random", {
-        type: "random",
-        message: error.message,
-      });
+      if (error instanceof Error) {
+        setError("root.random", {
+          type: "random",
+          message: error.message,
+        });
+      } else {
+        setError("root.random", {
+          type: "random",
+          message: "An unknown error occurred",
+        });
+      }
     }
   };
 
@@ -45,18 +59,18 @@ export default function LoginForm() {
         clearErrors();
         handleSubmit(submitLoginForm)(e);
       }}
-      autocomplete="off">
-      {errors?.auth?.type === "auth" && (
+      autoComplete="off">
+      {errors?.root?.auth?.type === "auth" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors?.auth?.message}</span>
+          <span>{errors?.root?.auth?.message}</span>
         </span>
       )}
 
-      {errors?.random?.type === "random" && (
+      {errors?.root?.random?.type === "random" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors?.random?.message}</span>
+          <span>{errors?.root?.random?.message}</span>
         </span>
       )}
       <div className="space-y-2">
@@ -104,7 +118,9 @@ export default function LoginForm() {
             id="remember"
             className="text-primary cursor-pointer rounded-sm focus:ring-0"
           />
-          <label for="remember" className="ml-2 cursor-pointer text-gray-600">
+          <label
+            htmlFor="remember"
+            className="ml-2 cursor-pointer text-gray-600">
             Remember me
           </label>
         </div>

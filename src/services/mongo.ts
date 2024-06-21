@@ -1,22 +1,11 @@
 import mongoose from "mongoose";
 
-// MongoDB connection string
-let conncetionString = process.env.MONGODB_CONNECTION_STRING;
-conncetionString = conncetionString.replace(
-  "<username>",
-  process.env.DATABASE_USERNAME,
-);
-conncetionString = conncetionString.replace(
-  "<password>",
-  process.env.DATABASE_PASSWORD,
-);
-
 // Cached connection promise
 const cached = {};
 
 export default async function connectMongoDB() {
   // If the connection string is not defined, throw an error
-  if (!conncetionString) {
+  if (!process.env.MONGODB_CONNECTION_STRING) {
     throw new Error("Please define the environment variable file");
   }
 
@@ -33,7 +22,10 @@ export default async function connectMongoDB() {
       dbName: "login-system",
     };
 
-    cached.promise = mongoose.connect(conncetionString, options);
+    cached.promise = mongoose.connect(
+      process.env.MONGODB_CONNECTION_STRING,
+      options,
+    );
   }
 
   // Wait for the connection to be ready and return it

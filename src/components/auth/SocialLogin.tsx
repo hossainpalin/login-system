@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 import { FaFacebook, FaGoogle } from "react-icons/fa";
 
 export default function SocialLogin() {
-  const handleSocialAuth = async (provider) => {
+  const handleSocialAuth = async (provider: string): Promise<void> => {
     signIn(provider, {
       callbackUrl: "/dashboard",
     });

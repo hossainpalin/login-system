@@ -2,12 +2,15 @@ import BackToHome from "@/components/BackToHome";
 import PasswordForm from "@/components/auth/PasswordForm";
 import Link from "next/link";
 
+type myParamsProps = {
+  searchParams: {
+    token: string;
+  };
+};
+
 export default function ResetPasswordPage({
-  searchParams,
-}: {
-  searchParams: URLSearchParams;
-}) {
-  const token = searchParams.token;
+  searchParams: { token },
+}: myParamsProps) {
   return (
     <div className="flex w-full max-w-lg flex-col items-center overflow-hidden rounded bg-white px-6 py-7 shadow">
       <div className="mb-8 w-full">

@@ -1,23 +1,12 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
-// MongoDB connection string
-let conncetionString = process.env.MONGODB_CONNECTION_STRING;
-conncetionString = conncetionString.replace(
-  "<username>",
-  process.env.DATABASE_USERNAME,
-);
-conncetionString = conncetionString.replace(
-  "<password>",
-  process.env.DATABASE_PASSWORD,
-);
-
-if (!conncetionString) {
+if (!process.env.MONGODB_CONNECTION_STRING) {
   throw new Error(
     "Invalid/Missing environment variables for MongoDB connection string.",
   );
 }
 
-const uri = conncetionString;
+const uri = process.env.MONGODB_CONNECTION_STRING;
 const options = {
   dbName: "login-system",
   serverApi: {

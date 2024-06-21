@@ -52,8 +52,8 @@ export const {
           const user = await UsersModel.findOne({ email: credentials?.email });
           if (user) {
             const isPasswordMatch = await bcrypt.compare(
-              credentials?.password,
-              user?.password,
+              credentials?.password as string,
+              user?.password as string,
             );
 
             if (isPasswordMatch) {
@@ -65,7 +65,11 @@ export const {
             return null;
           }
         } catch (error) {
-          throw new Error(error.message);
+          if (error instanceof Error) {
+            throw new Error(error.message);
+          } else {
+            throw new Error("An unknown error occurred");
+          }
         }
       },
     }),

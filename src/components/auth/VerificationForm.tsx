@@ -6,7 +6,7 @@ import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuAlertTriangle } from "react-icons/lu";
 import { BeatLoader } from "react-spinners";
 
-export default function VerificationForm({ token }) {
+export default function VerificationForm({ token }: { token: string }) {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
 

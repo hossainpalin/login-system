@@ -1,13 +1,19 @@
 import React from "react";
+import { FieldError } from "react-hook-form";
 import { IoAlertCircleOutline } from "react-icons/io5";
 
-export default function Field({ label, children, htmlFor, error }) {
-  const id = htmlFor || getChildId(children);
+type FieldProps = {
+  label?: string;
+  children: React.ReactNode;
+  htmlFor?: string;
+  error?: FieldError;
+};
 
+export default function Field({ label, children, htmlFor, error }: FieldProps) {
   return (
     <div>
       {label && (
-        <label htmlFor={id} className="mb-2 block text-gray-600">
+        <label htmlFor={htmlFor} className="mb-2 block text-gray-600">
           {label}
         </label>
       )}
@@ -21,11 +27,3 @@ export default function Field({ label, children, htmlFor, error }) {
     </div>
   );
 }
-
-const getChildId = (children) => {
-  const child = React.Children.only(children);
-
-  if ("id" in child.props) {
-    return child.props.id;
-  }
-};

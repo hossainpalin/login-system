@@ -3,11 +3,19 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import Field from "./Field";
+
+type RegisterFormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  agreement: boolean;
+};
 
 export default function RegisterForm() {
   const [eyeTogglePass, setEyeTogglePass] = useState(false);
@@ -16,15 +24,17 @@ export default function RegisterForm() {
   const [typeCPass, setTypeCPass] = useState(true);
 
   const { register, handleSubmit, formState, setError, watch, clearErrors } =
-    useForm();
+    useForm<RegisterFormData>();
   const { isSubmitting, errors } = formState;
 
-  const submitRegisterForm = async (data) => {
+  const submitRegisterForm: SubmitHandler<RegisterFormData> = async (
+    formData,
+  ): Promise<void> => {
     const userData = {
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      agreement: data.agreement,
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      agreement: formData.agreement,
     };
 
     try {
@@ -37,23 +47,30 @@ export default function RegisterForm() {
       });
 
       if (response.status === 400) {
-        setError("auth", {
+        setError("root.auth", {
           type: "auth",
           message: "User already exists",
         });
       }
 
       if (response.status === 201) {
-        setError("verify", {
+        setError("root.verify", {
           type: "verify",
           message: "Confirmation email sent!",
         });
       }
     } catch (error) {
-      setError("random", {
-        type: "random",
-        message: error.message,
-      });
+      if (error instanceof Error) {
+        setError("root.random", {
+          type: "random",
+          message: error.message,
+        });
+      } else {
+        setError("root.random", {
+          type: "random",
+          message: "An unknown error occurred",
+        });
+      }
     }
   };
 
@@ -63,30 +80,30 @@ export default function RegisterForm() {
         clearErrors();
         handleSubmit(submitRegisterForm)(e);
       }}
-      autocomplete="off">
-      {errors?.auth?.type === "auth" && (
+      autoComplete="off">
+      {errors?.root?.auth?.type === "auth" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors?.auth?.message}</span>
+          <span>{errors?.root?.auth?.message}</span>
         </span>
       )}
 
-      {errors?.random?.type === "random" && (
+      {errors?.root?.random?.type === "random" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-red-100 py-2 pl-2 text-red-600">
           <LuAlertTriangle />
-          <span>{errors?.random?.message}</span>
+          <span>{errors?.root?.random?.message}</span>
         </span>
       )}
 
-      {errors?.verify?.type === "verify" && (
+      {errors?.root?.verify?.type === "verify" && (
         <span className="text-md mb-5 flex items-center gap-2 rounded-md bg-green-100 py-2 pl-2 text-green-600">
           <IoIosCheckmarkCircleOutline />
-          <span>{errors?.verify?.message}</span>
+          <span>{errors?.root?.verify?.message}</span>
         </span>
       )}
 
-      <div class="space-y-2">
-        <Field error={errors.full_name} label="Full name">
+      <div className="space-y-2">
+        <Field error={errors.name} label="Full name">
           <input
             {...register("name", {
               required: "Full name is required field",

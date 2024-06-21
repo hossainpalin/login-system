@@ -42,7 +42,10 @@ export async function POST(request: NextRequest) {
 
     return new NextResponse("Confirmation email sent!", { status: 201 });
   } catch (error) {
-    console.log(error.message);
-    return new NextResponse(error.message, { status: 500 });
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    } else {
+      return new NextResponse("An unknown error occurred", { status: 500 });
+    }
   }
 }
