@@ -11,7 +11,7 @@ export async function generateVerificationToken(email: string) {
     const existingToken = await getVerificationTokenByEmail(email);
 
     if (existingToken) {
-      await VerificationTokensModel.deleteOne({ _id: existingToken._id });
+      await VerificationTokensModel.deleteOne({ _id: existingToken?._id });
     }
 
     const verificationToken = await VerificationTokensModel.create({

@@ -25,6 +25,9 @@ export default function Avatar({ userName, userAvatar, userId }) {
         "https://api.imgbb.com/1/upload?key=6d98024b636642e855954bf456da327d",
         {
           method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
           body: formData,
         },
       );
@@ -35,7 +38,7 @@ export default function Avatar({ userName, userAvatar, userId }) {
         setLoading(false);
       }
     } catch (error) {
-      throw new Error(error.message);
+      console.error(error.message);
     }
   };
   return (
@@ -51,6 +54,7 @@ export default function Avatar({ userName, userAvatar, userId }) {
                   width={50}
                   height={50}
                   className="h-full w-full object-cover"
+                  unoptimized={true}
                 />
               ) : (
                 <Image
@@ -59,6 +63,7 @@ export default function Avatar({ userName, userAvatar, userId }) {
                   alt={userName}
                   width={150}
                   height={150}
+                  priority={true}
                 />
               )
             ) : (
@@ -74,12 +79,12 @@ export default function Avatar({ userName, userAvatar, userId }) {
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
-                stroke-width="1.5"
+                strokeWidth="1.5"
                 stroke="white"
                 className="size-6 p-1">
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
                 />
               </svg>

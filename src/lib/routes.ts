@@ -3,4 +3,9 @@ export const ROOT = "/";
 
 export const PRIVATE_ROUTES = ["/dashboard"];
 
-export const AUTH_ROUTES = ["/login", "/register"];
+export const AUTH_ROUTES = [
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+];
