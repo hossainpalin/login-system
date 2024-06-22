@@ -40,7 +40,7 @@ export default function VerificationForm({ token }: { token: string }) {
       if (success) {
         router.push("/login");
       }
-    }, 2000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [success]);

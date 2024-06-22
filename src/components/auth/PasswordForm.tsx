@@ -16,8 +16,14 @@ export default function PasswordForm({ token }: { token: string }) {
   const [eyeToggle, setEyeToggle] = useState(false);
   const [type, setType] = useState(true);
 
-  const { register, handleSubmit, formState, clearErrors, setError } =
-    useForm<ResetPasswordFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState,
+    clearErrors,
+    setError,
+    resetField,
+  } = useForm<ResetPasswordFormData>();
   const { errors, isSubmitting } = formState;
 
   const onSubmit: SubmitHandler<ResetPasswordFormData> = async (
@@ -37,6 +43,7 @@ export default function PasswordForm({ token }: { token: string }) {
           message: response?.success,
         });
       }
+      resetField("password");
     } catch (error) {
       if (error instanceof Error) {
         setError("root.random", {

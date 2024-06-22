@@ -23,8 +23,15 @@ export default function RegisterForm() {
   const [eyeToggleCPass, setEyeToggleCPass] = useState(false);
   const [typeCPass, setTypeCPass] = useState(true);
 
-  const { register, handleSubmit, formState, setError, watch, clearErrors } =
-    useForm<RegisterFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState,
+    setError,
+    watch,
+    clearErrors,
+    resetField,
+  } = useForm<RegisterFormData>();
   const { isSubmitting, errors } = formState;
 
   const submitRegisterForm: SubmitHandler<RegisterFormData> = async (
@@ -59,6 +66,12 @@ export default function RegisterForm() {
           message: "Confirmation email sent!",
         });
       }
+
+      resetField("name");
+      resetField("email");
+      resetField("password");
+      resetField("confirmPassword");
+      resetField("agreement");
     } catch (error) {
       if (error instanceof Error) {
         setError("root.random", {

@@ -11,8 +11,14 @@ interface ForgotPasswordFormData {
 }
 
 export default function EmailForm() {
-  const { register, handleSubmit, formState, clearErrors, setError } =
-    useForm<ForgotPasswordFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState,
+    clearErrors,
+    setError,
+    resetField,
+  } = useForm<ForgotPasswordFormData>();
   const { errors, isSubmitting } = formState;
 
   const onSubmit: SubmitHandler<ForgotPasswordFormData> = async (
@@ -32,6 +38,7 @@ export default function EmailForm() {
           message: response?.success,
         });
       }
+      resetField("email");
     } catch (error) {
       if (error instanceof Error) {
         setError("root.random", {

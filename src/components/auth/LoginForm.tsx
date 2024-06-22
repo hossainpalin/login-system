@@ -20,8 +20,14 @@ export default function LoginForm() {
   const [type, setType] = useState(true);
   const router = useRouter();
 
-  const { register, handleSubmit, formState, clearErrors, setError } =
-    useForm<LoginFormProps>();
+  const {
+    register,
+    handleSubmit,
+    formState,
+    clearErrors,
+    setError,
+    resetField,
+  } = useForm<LoginFormProps>();
   const { isSubmitting, errors } = formState;
 
   const submitLoginForm: SubmitHandler<LoginFormProps> = async (
@@ -38,6 +44,9 @@ export default function LoginForm() {
       } else {
         router.push("/dashboard");
       }
+
+      resetField("email");
+      resetField("password");
     } catch (error) {
       if (error instanceof Error) {
         setError("root.random", {
