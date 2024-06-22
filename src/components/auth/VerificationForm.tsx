@@ -1,6 +1,7 @@
 "use client";
 
 import { verifyEmailAction } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuAlertTriangle } from "react-icons/lu";
@@ -9,6 +10,8 @@ import { BeatLoader } from "react-spinners";
 export default function VerificationForm({ token }: { token: string }) {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
+
+  const router = useRouter();
 
   const onSubmit = useCallback(() => {
     if (success || error) return;
@@ -31,6 +34,16 @@ export default function VerificationForm({ token }: { token: string }) {
   useEffect(() => {
     onSubmit();
   }, [onSubmit]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (success) {
+        router.push("/login");
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [success]);
 
   return (
     <div className="mb-8 text-center">

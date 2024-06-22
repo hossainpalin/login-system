@@ -1,5 +1,12 @@
 import Link from "next/link";
 
+export function metadata() {
+  return {
+    title: "404: Page Not Found",
+    description: "Not found page for your website.",
+  };
+}
+
 export default function NotFoundPage() {
   return (
     <div className="mx-auto max-w-screen-xl px-4 py-8 lg:px-6 lg:py-16">

@@ -1,13 +1,13 @@
-import { authConfig } from "@/auth.config";
 import NextAuth from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
+import authConfig from "./auth.config";
 import { AUTH_ROUTES, LOGIN, PRIVATE_ROUTES, ROOT } from "./lib/routes";
 
 const { auth } = NextAuth(authConfig);
 
 export default auth((request: NextRequest) => {
   const { nextUrl } = request;
-  const isAuthenticated = !!(request as any).auth;
+  const isAuthenticated = !!(request as any)?.auth;
 
   const isPrivateRoute = PRIVATE_ROUTES.find((route) =>
     nextUrl.pathname.startsWith(route),

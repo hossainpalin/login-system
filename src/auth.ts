@@ -4,7 +4,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
-import { authConfig } from "./auth.config";
+import authConfig from "./auth.config";
 import clientPromise from "./database/mongoClientPromise";
 import { getUserById } from "./database/queries/user";
 import { UsersModel } from "./models/user-model";
@@ -16,6 +16,9 @@ export const {
   handlers: { GET, POST },
 } = NextAuth({
   ...authConfig,
+  session: {
+    strategy: "jwt",
+  },
   adapter: MongoDBAdapter(clientPromise, {
     databaseName: process.env.ENVIRONMENT,
   }),
@@ -29,17 +32,17 @@ export const {
       if (!existingUser?.emailVerified) return false;
 
       // TODO - Add 2FA here
-
+      console.log("sign in", user);
       return true;
     },
-    async session({ session, token }) {
-      session.user = token as any;
+    async session({ token, session }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+
       return session;
     },
-    async jwt({ token }) {
-      if (token) {
-        token.id = token.sub;
-      }
+    async jwt({ token, user }) {
       return token;
     },
   },

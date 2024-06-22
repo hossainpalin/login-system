@@ -1,6 +1,8 @@
 import BackToHome from "@/components/BackToHome";
 import VerificationForm from "@/components/auth/VerificationForm";
+import { getVerificationTokenByToken } from "@/database/queries/verification-token";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 type myParamsProps = {
   searchParams: {
@@ -8,9 +10,20 @@ type myParamsProps = {
   };
 };
 
-export default function EmailVerificationPage({
+export function metadata() {
+  return {
+    title: "Email Verification",
+    description: "Email verification page for your website.",
+  };
+}
+
+export default async function EmailVerificationPage({
   searchParams: { token },
 }: myParamsProps) {
+  const isTokenValid = await getVerificationTokenByToken(token);
+
+  if (!isTokenValid) notFound();
+
   return (
     <div className="flex w-full max-w-lg flex-col items-center overflow-hidden rounded bg-white px-6 py-7 shadow">
       <div className="mb-8 w-full">
