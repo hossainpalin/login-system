@@ -2,12 +2,12 @@ import React from "react";
 import { FieldError } from "react-hook-form";
 import { IoAlertCircleOutline } from "react-icons/io5";
 
-type FieldProps = {
+interface FieldProps {
   label?: string;
   children: React.ReactNode;
   htmlFor?: string;
   error?: FieldError;
-};
+}
 
 export default function Field({ label, children, htmlFor, error }: FieldProps) {
   return (

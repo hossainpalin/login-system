@@ -5,11 +5,11 @@ import Image from "next/image";
 import * as React from "react";
 import { useRef, useState } from "react";
 
-type AvatarProps = {
+interface AvatarProps {
   userName: string | null | undefined;
   userAvatar: string | null | undefined;
   userId: string | null | undefined;
-};
+}
 
 export default function Avatar({ userName, userAvatar, userId }: AvatarProps) {
   const [loading, setLoading] = useState<boolean | undefined>(false);

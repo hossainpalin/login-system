@@ -7,7 +7,7 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((request: NextRequest) => {
   const { nextUrl } = request;
-  const isAuthenticated = !!request.auth;
+  const isAuthenticated = !!(request as any).auth;
 
   const isPrivateRoute = PRIVATE_ROUTES.find((route) =>
     nextUrl.pathname.startsWith(route),

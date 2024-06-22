@@ -8,9 +8,9 @@ import { IoAlertCircleOutline } from "react-icons/io5";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 
-type ResetPasswordFormData = {
+interface ResetPasswordFormData {
   password: string;
-};
+}
 
 export default function PasswordForm({ token }: { token: string }) {
   const [eyeToggle, setEyeToggle] = useState(false);

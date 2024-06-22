@@ -9,13 +9,13 @@ import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import Field from "./Field";
 
-type RegisterFormData = {
+interface RegisterFormData {
   name: string;
   email: string;
   password: string;
   confirmPassword: string;
   agreement: boolean;
-};
+}
 
 export default function RegisterForm() {
   const [eyeTogglePass, setEyeTogglePass] = useState(false);

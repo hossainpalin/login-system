@@ -13,7 +13,7 @@ export function metadata() {
 
 export default async function DashboardPage() {
   const session = await auth();
-  const user = await getUserByEmail(session?.user?.email);
+  const user = await getUserByEmail(session?.user?.email as string);
 
   return (
     <div className="flex w-full max-w-lg flex-col items-center overflow-hidden rounded bg-white px-6 py-7 shadow">

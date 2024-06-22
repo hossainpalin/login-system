@@ -6,9 +6,9 @@ import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { LuAlertTriangle } from "react-icons/lu";
 
-type ForgotPasswordFormData = {
+interface ForgotPasswordFormData {
   email: string;
-};
+}
 
 export default function EmailForm() {
   const { register, handleSubmit, formState, clearErrors, setError } =

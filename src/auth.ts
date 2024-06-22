@@ -25,7 +25,7 @@ export const {
       if (account?.provider !== "credentials") return true;
 
       // Check if email is verified
-      const existingUser = await getUserById(user?.id);
+      const existingUser = await getUserById(user?.id as string);
       if (!existingUser?.emailVerified) return false;
 
       // TODO - Add 2FA here

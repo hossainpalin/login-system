@@ -1,7 +1,7 @@
 import { UsersModel } from "@/models/user-model";
 import connectMongoDB from "@/services/mongo";
 
-export async function updateAvatar(userId, avatar) {
+export async function updateAvatar(userId: string, avatar: string) {
   await connectMongoDB();
   const user = await UsersModel.findOne({ _id: userId });
 

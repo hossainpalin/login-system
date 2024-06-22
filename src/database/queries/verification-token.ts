@@ -6,7 +6,7 @@ export async function generateVerificationToken(email: string) {
   try {
     await connectMongoDB();
 
-    const token = crypto.randomUUID(32).toString("hex");
+    const token = crypto.randomUUID().toString();
     const expirationDate = new Date(new Date().getTime() + 3600 * 1000);
     const existingToken = await getVerificationTokenByEmail(email);
 
@@ -22,7 +22,11 @@ export async function generateVerificationToken(email: string) {
 
     return verificationToken;
   } catch (error) {
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 }
 
@@ -33,7 +37,11 @@ export async function getVerificationTokenByEmail(email: string) {
     const verificationToken = await VerificationTokensModel.findOne({ email });
     return verificationToken;
   } catch (error) {
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 }
 
@@ -44,6 +52,10 @@ export async function getVerificationTokenByToken(token: string) {
     const verificationToken = await VerificationTokensModel.findOne({ token });
     return verificationToken;
   } catch (error) {
-    throw new Error(error.message);
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
 }

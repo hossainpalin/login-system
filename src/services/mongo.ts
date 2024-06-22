@@ -1,7 +1,12 @@
 import mongoose from "mongoose";
 
+interface CachedProps {
+  connection?: typeof mongoose;
+  promise?: Promise<typeof mongoose>;
+}
+
 // Cached connection promise
-const cached = {};
+const cached: CachedProps = {};
 
 export default async function connectMongoDB() {
   // If the connection string is not defined, throw an error
@@ -33,8 +38,12 @@ export default async function connectMongoDB() {
     cached.connection = await cached.promise;
     console.log("Database is connected");
   } catch (error) {
-    cached.promise = undefined;
-    throw error;
+    if (error instanceof Error) {
+      cached.promise = undefined;
+      throw error;
+    } else {
+      throw new Error("An unknown error occurred");
+    }
   }
   return cached.connection;
 }

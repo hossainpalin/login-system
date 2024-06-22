@@ -10,10 +10,10 @@ import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
 import Field from "./Field";
 
-type LoginFormProps = {
+interface LoginFormProps {
   email: string;
   password: string;
-};
+}
 
 export default function LoginForm() {
   const [eyeToggle, setEyeToggle] = useState(false);
