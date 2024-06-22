@@ -1,6 +1,7 @@
 "use client";
 
 import { resetPasswordAction } from "@/actions/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
@@ -13,8 +14,11 @@ interface ResetPasswordFormData {
 }
 
 export default function PasswordForm({ token }: { token: string }) {
-  const [eyeToggle, setEyeToggle] = useState(false);
-  const [type, setType] = useState(true);
+  const [resetSuccess, setResetSuccess] = useState<boolean | undefined>(false);
+  const [eyeToggle, setEyeToggle] = useState<boolean | undefined>(false);
+  const [type, setType] = useState<boolean | undefined>(true);
+
+  const router = useRouter();
 
   const {
     register,
@@ -42,6 +46,8 @@ export default function PasswordForm({ token }: { token: string }) {
           type: "reset",
           message: response?.success,
         });
+
+        setResetSuccess(true);
       }
       resetField("password");
     } catch (error) {
@@ -58,6 +64,17 @@ export default function PasswordForm({ token }: { token: string }) {
       }
     }
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (resetSuccess) {
+        router.push("/login");
+        setResetSuccess(false);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [resetSuccess]);
 
   return (
     <form
