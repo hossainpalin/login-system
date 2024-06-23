@@ -2,7 +2,7 @@
 
 import { resetPasswordAction } from "@/actions/auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { IoAlertCircleOutline } from "react-icons/io5";
