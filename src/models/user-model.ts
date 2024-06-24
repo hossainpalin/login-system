@@ -33,9 +33,9 @@ const userSchema = new Schema(
       required: false,
       default: false,
     },
-    twoFactorConfirmation: {
-      type: Schema.Types.ObjectId,
-      ref: "twoFactorConfirmation",
+    provider: {
+      type: String,
+      default: "credentials",
       required: false,
     },
   },

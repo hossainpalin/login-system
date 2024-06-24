@@ -45,10 +45,12 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <EnableTwoFactor
-        isTwoFactorEnabled={user?.isTwoFactorEnabled}
-        email={user?.email}
-      />
+      {user?.provider === "credentials" && (
+        <EnableTwoFactor
+          isTwoFactorEnabled={user?.isTwoFactorEnabled}
+          email={user?.email}
+        />
+      )}
 
       <Logout isNav={false} />
     </div>
