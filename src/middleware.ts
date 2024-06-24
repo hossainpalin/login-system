@@ -17,8 +17,6 @@ export default auth((request: NextRequest) => {
     nextUrl.pathname.startsWith(route),
   );
 
-  // const isTwoFactorRoute = TWO_FACTOR === nextUrl.pathname;
-
   if (!isAuthenticated && isPrivateRoute) {
     return NextResponse.redirect(new URL(LOGIN, nextUrl));
   }
@@ -26,10 +24,6 @@ export default auth((request: NextRequest) => {
   if (isAuthenticated && isAuthRoute) {
     return NextResponse.redirect(new URL(ROOT, nextUrl));
   }
-
-  // if (isAuthenticated && isTwoFactorRoute) {
-  //   return NextResponse.redirect(new URL(TWO_FACTOR, nextUrl));
-  // }
 
   return NextResponse.next();
 });

@@ -1,14 +1,14 @@
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import authConfig from "./auth.config";
 import clientPromise from "./database/mongoClientPromise";
-import { getTwoFactorConfirmationByUserId } from "./database/queries/two-factor-confirmation";
+import { getTwoFactorConfirmationTokenByEmail } from "./database/queries/two-factor-confirmation";
 import { getUserById } from "./database/queries/user";
 import { UsersModel } from "./models/user-model";
+import connectMongoDB from "./services/mongo";
 
 export const {
   auth,
@@ -33,20 +33,15 @@ export const {
 
       if (!existingUser?.emailVerified) return false;
 
+      // Check if two factor is enabled
       if (existingUser?.isTwoFactorEnabled) {
-        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
-          existingUser?.id as string,
+        const existingConfirmation = await getTwoFactorConfirmationTokenByEmail(
+          existingUser?.email as string,
         );
 
-        if (!twoFactorConfirmation) {
-          return false;
-        }
+        if (!existingConfirmation) return true;
 
-        // Delete the two factor confirmation after successful login
-        await connectMongoDB();
-        await TwoFactorConfirmationModel.deleteOne({
-          _id: twoFactorConfirmation?._id,
-        });
+        return false;
       }
 
       return true;
@@ -68,18 +63,11 @@ export const {
         if (credentials == null) return null;
 
         try {
+          await connectMongoDB();
           const user = await UsersModel.findOne({ email: credentials?.email });
-          if (user) {
-            const isPasswordMatch = await bcrypt.compare(
-              credentials?.password as string,
-              user?.password as string,
-            );
 
-            if (isPasswordMatch) {
-              return user;
-            } else {
-              return null;
-            }
+          if (user) {
+            return user;
           } else {
             return null;
           }

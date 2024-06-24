@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import Avatar from "@/components/auth/Avatar";
+import EnableTwoFactor from "@/components/auth/EnableTwoFactor";
 import Logout from "@/components/auth/Logout";
 import BackToHome from "@/components/BackToHome";
 import { getUserByEmail } from "@/database/queries/user";
@@ -43,6 +44,11 @@ export default async function DashboardPage() {
             : "No email address found"}
         </p>
       </div>
+
+      <EnableTwoFactor
+        isTwoFactorEnabled={user?.isTwoFactorEnabled}
+        email={user?.email}
+      />
 
       <Logout isNav={false} />
     </div>

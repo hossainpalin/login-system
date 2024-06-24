@@ -9,4 +9,5 @@ export const AUTH_ROUTES = [
   "/register",
   "/forgot-password",
   "/reset-password",
+  "/two-factor",
 ];

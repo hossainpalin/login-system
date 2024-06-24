@@ -87,6 +87,15 @@ export default function Avatar({ userName, userAvatar, userId }: AvatarProps) {
                   priority={true}
                 />
               )
+            ) : loading ? (
+              <Image
+                src="/loading.gif"
+                alt="loading"
+                width={50}
+                height={50}
+                className="h-full w-full object-cover"
+                unoptimized={true}
+              />
             ) : (
               <p>{userName?.charAt(0)?.toUpperCase()}</p>
             )}

@@ -5,8 +5,7 @@ import {
   generateResetToken,
   getResetTokenByToken,
 } from "@/database/queries/reset-token";
-import { getTwoFactorConfirmationByUserId } from "@/database/queries/two-factor-confirmation";
-import { generateTwoFactorTempUserToken } from "@/database/queries/two-factor-temp-user";
+import { generateTwoFactorConfirmationToken } from "@/database/queries/two-factor-confirmation";
 import {
   generateTwoFactorToken,
   getTwoFactorTokenByEmail,
@@ -22,17 +21,17 @@ import {
   sendVerificationEmail,
 } from "@/lib/email";
 import { ResetTokensModel } from "@/models/reset-token-model";
-import { TwoFactorConfirmationModel } from "@/models/two-factor-confirmation-model.ts";
+import { TwoFactorConfirmationModel } from "@/models/two-factor-confirmation-model";
 import { TwoFactorTokensModel } from "@/models/two-factor-token-model";
 import { UsersModel } from "@/models/user-model";
 import { VerificationTokensModel } from "@/models/verification-token-model";
 import connectMongoDB from "@/services/mongo";
 import bcrypt from "bcrypt";
-import { AuthError } from "next-auth";
 
 type userProps = {
   email: string;
   password: string;
+  twoFactor?: string;
 };
 
 // User login action
@@ -40,7 +39,7 @@ export async function loginAction(formData: userProps) {
   const existingUser = await getUserByEmail(formData?.email);
 
   // Check if the user exists and email is verified or not
-  if (existingUser && !existingUser.emailVerified) {
+  if (existingUser && !existingUser?.emailVerified) {
     const verificationToken = await generateVerificationToken(
       existingUser?.email,
     );
@@ -49,7 +48,22 @@ export async function loginAction(formData: userProps) {
   }
 
   // Check if the user exists and two factor is enabled or not
-  if (existingUser.isTwoFactorEnabled && existingUser?.email) {
+  if (existingUser?.email && existingUser?.isTwoFactorEnabled) {
+    // Check if the user exists and password is correct or not
+    await connectMongoDB();
+    const user = await UsersModel.findOne({ email: existingUser?.email });
+
+    if (user) {
+      const isPasswordMatch = await bcrypt.compare(
+        formData?.password as string,
+        user?.password as string,
+      );
+
+      if (!isPasswordMatch) {
+        return { error: "Invalid Password!" };
+      }
+    }
+
     if (formData?.twoFactor) {
       const twoFactorToken = await getTwoFactorTokenByEmail(
         existingUser?.email,
@@ -71,32 +85,39 @@ export async function loginAction(formData: userProps) {
 
       await connectMongoDB();
       await TwoFactorTokensModel.deleteOne({ _id: twoFactorToken?._id });
-
-      const existingConfirmation = await getTwoFactorConfirmationByUserId(
-        existingUser?.id,
-      );
-
-      if (existingConfirmation) {
-        await connectMongoDB();
-        await TwoFactorConfirmationModel.deleteOne({
-          _id: existingConfirmation?._id,
-        });
-      }
-
-      await connectMongoDB();
-      await TwoFactorConfirmationModel.create({ userId: existingUser?.id });
+      await TwoFactorConfirmationModel.deleteOne({
+        email: existingUser?.email,
+      });
     } else {
-      const twoFactorTempUserToken = await generateTwoFactorTempUserToken(
-        formData?.email,
-        formData?.password,
-      );
+      const twoFactorConfirmationToken =
+        await generateTwoFactorConfirmationToken(
+          formData?.email,
+          formData?.password,
+        );
       const twoFactorToken = await generateTwoFactorToken(existingUser?.email);
       await sendTwoFactorToken(existingUser?.email, twoFactorToken?.token);
-      return { twoFactor: true, token: twoFactorTempUserToken?.token };
+      return { twoFactor: true, token: twoFactorConfirmationToken?.token };
     }
   }
 
   try {
+    // Check if the user exists and password is correct or not
+    await connectMongoDB();
+    const user = await UsersModel.findOne({ email: existingUser?.email });
+
+    if (user) {
+      const isPasswordMatch = await bcrypt.compare(
+        formData?.password as string,
+        user?.password as string,
+      );
+
+      if (!isPasswordMatch) {
+        return { error: "Invalid Password!" };
+      }
+    } else {
+      return { error: "Invalid Email Address!" };
+    }
+
     const response = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
@@ -105,16 +126,11 @@ export async function loginAction(formData: userProps) {
 
     return response;
   } catch (error) {
-    if (error instanceof AuthError) {
-      switch (error.type) {
-        case "CallbackRouteError":
-          return { error: "Invalid email or password!" };
-        default:
-          return { error: "Something went wrong" };
-      }
+    if (error instanceof Error) {
+      return { error: error.message };
+    } else {
+      return { error: "An unknown error occurred" };
     }
-
-    throw error;
   }
 }
 
@@ -211,5 +227,18 @@ export async function resetPasswordAction(token: string, password: string) {
     } else {
       return { error: "An unknown error occurred" };
     }
+  }
+}
+
+// Enable two factor action
+export async function enableTwoFactorAction(email: string, value: boolean) {
+  const existingUser = await getUserByEmail(email);
+
+  if (existingUser) {
+    await connectMongoDB();
+    await UsersModel.findOneAndUpdate(
+      { email: existingUser?.email },
+      { $set: { isTwoFactorEnabled: value } },
+    );
   }
 }

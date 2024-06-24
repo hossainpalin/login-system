@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.2.0",
     "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "mongodb": "^6.7.0",
     "mongoose": "^8.4.3",
     "next": "14.2.3",

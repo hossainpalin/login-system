@@ -1,16 +1,21 @@
 import BackToHome from "@/components/BackToHome";
 import TwoFactorForm from "@/components/auth/TwoFactorForm";
-import { cookies } from "next/headers";
+import { getTwoFactorConfirmationTokenByToken } from "@/database/queries/two-factor-confirmation";
+import { notFound } from "next/navigation";
 
-export default async function TwoFactorPage() {
-    const cookieStore = cookies();
-    let twoFactor = cookieStore.get("twoFactor");
+type myParamsProps = {
+  searchParams: {
+    token: string;
+  };
+};
 
-    if (twoFactor?.value) {
-      twoFactor = JSON.parse(twoFactor?.value);
-    } else {
-      twoFactor = false;
-    }
+export default async function TwoFactorPage({
+  searchParams: { token },
+}: myParamsProps) {
+  const existingConfirmation =
+    await getTwoFactorConfirmationTokenByToken(token);
+
+  if (!existingConfirmation) notFound();
 
   return (
     <div className="w-full max-w-lg overflow-hidden rounded bg-white px-6 py-7 shadow">
@@ -24,7 +29,10 @@ export default async function TwoFactorPage() {
         Two factor code sent to your email address.
       </p>
 
-      <TwoFactorForm />
+      <TwoFactorForm
+        email={existingConfirmation?.email}
+        password={existingConfirmation?.password}
+      />
     </div>
   );
 }
