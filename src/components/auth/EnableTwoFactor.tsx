@@ -4,12 +4,18 @@ import { enableTwoFactorAction } from "@/actions/auth";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-export default function EnableTwoFactor({ isTwoFactorEnabled, email }) {
+export default function EnableTwoFactor({
+  isTwoFactorEnabled,
+  email,
+}: {
+  isTwoFactorEnabled: boolean;
+  email: string;
+}) {
   const [is2FAEnabled, setIs2FAEnabled] = useState<string | undefined>(
     isTwoFactorEnabled ? "enable" : "disable",
   );
 
-  const handleEnable2FA = async (value) => {
+  const handleEnable2FA = async (value: string) => {
     if (value === "enable") {
       setIs2FAEnabled("enable");
       await enableTwoFactorAction(email, true);
