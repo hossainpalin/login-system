@@ -6,6 +6,7 @@ import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import authConfig from "./auth.config";
 import clientPromise from "./database/mongoClientPromise";
+import { getTwoFactorConfirmationByUserId } from "./database/queries/two-factor-confirmation";
 import { getUserById } from "./database/queries/user";
 import { UsersModel } from "./models/user-model";
 
@@ -29,10 +30,25 @@ export const {
 
       // Check if email is verified
       const existingUser = await getUserById(user?.id as string);
+
       if (!existingUser?.emailVerified) return false;
 
-      // TODO - Add 2FA here
-      console.log("sign in", user);
+      if (existingUser?.isTwoFactorEnabled) {
+        const twoFactorConfirmation = await getTwoFactorConfirmationByUserId(
+          existingUser?.id as string,
+        );
+
+        if (!twoFactorConfirmation) {
+          return false;
+        }
+
+        // Delete the two factor confirmation after successful login
+        await connectMongoDB();
+        await TwoFactorConfirmationModel.deleteOne({
+          _id: twoFactorConfirmation?._id,
+        });
+      }
+
       return true;
     },
     async session({ token, session }) {

@@ -16,8 +16,8 @@ interface LoginFormProps {
 }
 
 export default function LoginForm() {
-  const [eyeToggle, setEyeToggle] = useState(false);
-  const [type, setType] = useState(true);
+  const [eyeToggle, setEyeToggle] = useState<boolean | undefined>(false);
+  const [type, setType] = useState<boolean | undefined>(true);
   const router = useRouter();
 
   const {
@@ -41,12 +41,14 @@ export default function LoginForm() {
           type: "auth",
           message: response.error,
         });
+
+        resetField("email");
+        resetField("password");
+      } else if (response.twoFactor) {
+        router.push(`/two-factor?token=${response?.token}`);
       } else {
         router.push("/dashboard");
       }
-
-      resetField("email");
-      resetField("password");
     } catch (error) {
       if (error instanceof Error) {
         setError("root.random", {
@@ -82,6 +84,7 @@ export default function LoginForm() {
           <span>{errors?.root?.random?.message}</span>
         </span>
       )}
+
       <div className="space-y-2">
         <Field error={errors.email} label="Email address">
           <input
@@ -137,6 +140,7 @@ export default function LoginForm() {
           Forgot password
         </Link>
       </div>
+
       <div className="mt-4">
         <button disabled={isSubmitting} type="submit" className="submit-button">
           {isSubmitting ? "Logging..." : "Login"}

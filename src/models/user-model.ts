@@ -28,6 +28,16 @@ const userSchema = new Schema(
       required: false,
       default: false,
     },
+    isTwoFactorEnabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    twoFactorConfirmation: {
+      type: Schema.Types.ObjectId,
+      ref: "twoFactorConfirmation",
+      required: false,
+    },
   },
   { timestamps: true },
 );

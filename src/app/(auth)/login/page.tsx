@@ -17,9 +17,8 @@ export default async function LoginPage() {
         <BackToHome />
         <h2 className="mb-1 text-2xl font-medium text-gray-700">Login</h2>
       </div>
-      <p className="text-md mb-6 text-gray-600">
-        Welcome back login to continue
-      </p>
+      <p className="text-md mb-6 text-gray-600">Login to your account.</p>
+
       <LoginForm />
 
       <div className="relative mt-6 flex justify-center">

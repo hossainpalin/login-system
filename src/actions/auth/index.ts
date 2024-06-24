@@ -5,13 +5,25 @@ import {
   generateResetToken,
   getResetTokenByToken,
 } from "@/database/queries/reset-token";
+import { getTwoFactorConfirmationByUserId } from "@/database/queries/two-factor-confirmation";
+import { generateTwoFactorTempUserToken } from "@/database/queries/two-factor-temp-user";
+import {
+  generateTwoFactorToken,
+  getTwoFactorTokenByEmail,
+} from "@/database/queries/two-factor-token";
 import { getUserByEmail } from "@/database/queries/user";
 import {
   generateVerificationToken,
   getVerificationTokenByToken,
 } from "@/database/queries/verification-token";
-import { sendResetEmail, sendVerificationEmail } from "@/lib/email";
+import {
+  sendResetEmail,
+  sendTwoFactorToken,
+  sendVerificationEmail,
+} from "@/lib/email";
 import { ResetTokensModel } from "@/models/reset-token-model";
+import { TwoFactorConfirmationModel } from "@/models/two-factor-confirmation-model.ts";
+import { TwoFactorTokensModel } from "@/models/two-factor-token-model";
 import { UsersModel } from "@/models/user-model";
 import { VerificationTokensModel } from "@/models/verification-token-model";
 import connectMongoDB from "@/services/mongo";
@@ -34,6 +46,54 @@ export async function loginAction(formData: userProps) {
     );
     await sendVerificationEmail(existingUser?.email, verificationToken?.token);
     return { error: "Please verify your email address!" };
+  }
+
+  // Check if the user exists and two factor is enabled or not
+  if (existingUser.isTwoFactorEnabled && existingUser?.email) {
+    if (formData?.twoFactor) {
+      const twoFactorToken = await getTwoFactorTokenByEmail(
+        existingUser?.email,
+      );
+
+      if (!twoFactorToken) {
+        return { error: "Invalid two factor code!" };
+      }
+
+      if (twoFactorToken?.token !== formData?.twoFactor) {
+        return { error: "Invalid two factor code!" };
+      }
+
+      const hasExpired = new Date(twoFactorToken?.expirationDate) < new Date();
+
+      if (hasExpired) {
+        return { error: "Two factor code has expired!" };
+      }
+
+      await connectMongoDB();
+      await TwoFactorTokensModel.deleteOne({ _id: twoFactorToken?._id });
+
+      const existingConfirmation = await getTwoFactorConfirmationByUserId(
+        existingUser?.id,
+      );
+
+      if (existingConfirmation) {
+        await connectMongoDB();
+        await TwoFactorConfirmationModel.deleteOne({
+          _id: existingConfirmation?._id,
+        });
+      }
+
+      await connectMongoDB();
+      await TwoFactorConfirmationModel.create({ userId: existingUser?.id });
+    } else {
+      const twoFactorTempUserToken = await generateTwoFactorTempUserToken(
+        formData?.email,
+        formData?.password,
+      );
+      const twoFactorToken = await generateTwoFactorToken(existingUser?.email);
+      await sendTwoFactorToken(existingUser?.email, twoFactorToken?.token);
+      return { twoFactor: true, token: twoFactorTempUserToken?.token };
+    }
   }
 
   try {
