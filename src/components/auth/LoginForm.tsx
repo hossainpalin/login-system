@@ -1,10 +1,15 @@
 "use client";
 
-import { loginAction } from "@/actions/auth";
+import {
+  loginAction,
+  rememberMeGetCookieAction,
+  rememberMeSetCookieAction,
+} from "@/actions/auth";
 import { cn } from "@/lib/utils";
+import { decryptText } from "@/utils/encryptText";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { LuAlertTriangle } from "react-icons/lu";
 import { VscEye, VscEyeClosed } from "react-icons/vsc";
@@ -27,14 +32,27 @@ export default function LoginForm() {
     clearErrors,
     setError,
     resetField,
+    setValue,
   } = useForm<LoginFormProps>();
+
   const { isSubmitting, errors } = formState;
 
   const submitLoginForm: SubmitHandler<LoginFormProps> = async (
     formData,
   ): Promise<void> => {
+    const userFormData = {
+      email: formData.email,
+      password: formData.password,
+    };
+
+    const rememberMe = formData.remember;
+
+    if (rememberMe) {
+      await rememberMeSetCookieAction(formData.email, formData.password);
+    }
+
     try {
-      const response = await loginAction(formData);
+      const response = await loginAction(userFormData);
 
       if (response.error) {
         setError("root.auth", {
@@ -63,6 +81,22 @@ export default function LoginForm() {
       }
     }
   };
+
+  useEffect(() => {
+    const getRememberMeCookies = async (): Promise<void> => {
+      const user = await rememberMeGetCookieAction();
+
+      if (user) {
+        const email = decryptText(user?.email, "secretKey");
+        const password = decryptText(user?.password, "secretKey");
+
+        setValue("email", email);
+        setValue("password", password);
+      }
+    };
+
+    getRememberMeCookies();
+  }, []);
 
   return (
     <form
@@ -125,6 +159,7 @@ export default function LoginForm() {
       <div className="mt-6 flex items-center justify-between">
         <div className="flex items-center">
           <input
+            {...register("remember", { required: false })}
             type="checkbox"
             name="remember"
             id="remember"

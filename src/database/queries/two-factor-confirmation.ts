@@ -1,6 +1,6 @@
 import { TwoFactorConfirmationModel } from "@/models/two-factor-confirmation-model";
 import connectMongoDB from "@/services/mongo";
-import { encryptTest } from "@/utils/encryptText";
+import { encryptText } from "@/utils/encryptText";
 
 // Generate two factor confirmation token
 export async function generateTwoFactorConfirmationToken(
@@ -18,7 +18,7 @@ export async function generateTwoFactorConfirmationToken(
       await TwoFactorConfirmationModel.deleteOne({ _id: existingToken?._id });
     }
 
-    const encryptPassword = encryptTest(password, email);
+    const encryptPassword = encryptText(password, email);
 
     const twoFactorConfirmationToken = await TwoFactorConfirmationModel.create({
       email,

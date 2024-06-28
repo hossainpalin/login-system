@@ -26,7 +26,9 @@ import { TwoFactorTokensModel } from "@/models/two-factor-token-model";
 import { UsersModel } from "@/models/user-model";
 import { VerificationTokensModel } from "@/models/verification-token-model";
 import connectMongoDB from "@/services/mongo";
+import { encryptText } from "@/utils/encryptText";
 import bcrypt from "bcrypt";
+import { cookies } from "next/headers";
 
 type userProps = {
   email: string;
@@ -240,5 +242,39 @@ export async function enableTwoFactorAction(email: string, value: boolean) {
       { email: existingUser?.email },
       { $set: { isTwoFactorEnabled: value } },
     );
+  }
+}
+
+// Remember me set password action
+export async function rememberMeSetCookieAction(
+  email: string,
+  password: string,
+) {
+  const cookiesStore = cookies();
+  const encryptEmail = encryptText(email, "secretKey");
+  const encryptPassword = encryptText(password, "secretKey");
+
+  if (encryptEmail && encryptPassword) {
+    cookiesStore.set("a_u_e_clearance", encryptEmail, {
+      path: "/",
+      domain: "localhost",
+    });
+    cookiesStore.set("a_u_p_clearance", encryptPassword, {
+      path: "/",
+      domain: "localhost",
+    });
+  }
+}
+
+// Remember me get password action
+export async function rememberMeGetCookieAction() {
+  const cookiesStore = cookies();
+  const email = cookiesStore.get("a_u_e_clearance");
+  const password = cookiesStore.get("a_u_p_clearance");
+
+  if (email?.value && password?.value) {
+    return { email: email.value, password: password.value };
+  } else {
+    return null;
   }
 }

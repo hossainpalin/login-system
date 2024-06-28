@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 
-export function encryptTest(text: string, key: string): string {
+export function encryptText(text: string, key: string): string {
   const encrypted = CryptoJS.AES.encrypt(text, key).toString();
   return encrypted;
 }
