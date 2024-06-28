@@ -35,12 +35,12 @@ export default function EnableTwoFactor({
       <div className="flex gap-5">
         <button
           onClick={() => handleEnable2FA("enable")}
-          className={`rounded-md bg-gray-200 px-2 py-1 hover:bg-gray-300 ${cn(is2FAEnabled === "enable" ? "bg-blue-500 text-white hover:bg-blue-600" : "")}`}>
+          className={`rounded-md bg-gray-200 px-2 py-1 hover:bg-gray-300 ${cn(is2FAEnabled === "enable" ? "bg-green-600 text-white hover:bg-green-700" : "")}`}>
           Enable
         </button>
         <button
           onClick={() => handleEnable2FA("disable")}
-          className={`rounded-md bg-gray-200 px-2 py-1 hover:bg-gray-300 ${cn(is2FAEnabled === "disable" ? "bg-blue-500 text-white hover:bg-blue-600" : "")}`}>
+          className={`rounded-md bg-gray-200 px-2 py-1 hover:bg-gray-300 ${cn(is2FAEnabled === "disable" ? "bg-green-600 text-white hover:bg-green-700" : "")}`}>
           Disable
         </button>
       </div>

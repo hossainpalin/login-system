@@ -18,6 +18,7 @@ import Field from "./Field";
 interface LoginFormProps {
   email: string;
   password: string;
+  remember: boolean;
 }
 
 export default function LoginForm() {
@@ -45,10 +46,10 @@ export default function LoginForm() {
       password: formData.password,
     };
 
-    const rememberMe = formData.remember;
+    const rememberMe = formData?.remember;
 
     if (rememberMe) {
-      await rememberMeSetCookieAction(formData.email, formData.password);
+      await rememberMeSetCookieAction(formData?.email, formData?.password);
     }
 
     try {

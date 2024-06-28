@@ -257,11 +257,11 @@ export async function rememberMeSetCookieAction(
   if (encryptEmail && encryptPassword) {
     cookiesStore.set("a_u_e_clearance", encryptEmail, {
       path: "/",
-      domain: "localhost",
+      domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
     });
     cookiesStore.set("a_u_p_clearance", encryptPassword, {
       path: "/",
-      domain: "localhost",
+      domain: process.env.NEXT_PUBLIC_COOKIE_DOMAIN,
     });
   }
 }
